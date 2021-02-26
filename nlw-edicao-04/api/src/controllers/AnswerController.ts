@@ -35,4 +35,4 @@ class AnswerController {
   };
 };
 
-export { AnswerController }
+export { AnswerController };
