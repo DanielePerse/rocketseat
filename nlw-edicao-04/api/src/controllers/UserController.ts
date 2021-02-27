@@ -56,6 +56,17 @@ class UserController {
 
     return response.json(all);
   }
+
+  async update(request: Request, response: Response) {
+    const usersRepository = getCustomRepository(UsersRepository);
+    const { id } = request.params;
+
+    const user = await usersRepository.findOne(id);
+
+    usersRepository.merge(user, request.body);
+    const results = await usersRepository.save(user);
+    return response.json(results);
+  }
 };
 
 export { UserController };
