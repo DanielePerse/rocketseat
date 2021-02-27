@@ -61,12 +61,34 @@ class UserController {
     const usersRepository = getCustomRepository(UsersRepository);
     const { id } = request.params;
 
+    const schema = yup.object().shape({
+      name: yup.string().required("Nome é obrigatório!"),
+      email: yup.string().email().required("Email incorreto!"),
+    });
+
+    try {
+      await schema.validate(request.body, { abortEarly: false });
+    } catch (err) {
+      throw new AppError(err);
+    };
+
     const user = await usersRepository.findOne(id);
 
     usersRepository.merge(user, request.body);
     const results = await usersRepository.save(user);
-    return response.json(results);
-  }
+    return response.status(200).json(results);
+  };
+
+  async exclude(request: Request, response: Response) {
+    const usersRepository = getCustomRepository(UsersRepository);
+    const { id } = request.params;
+
+    if (!id) return response.status(400).json({ message: "User not found"});
+
+    await usersRepository.delete(id);
+
+    return response.status(200).json({ message: "Deleted User" });
+  };
 };
 
 export { UserController };
